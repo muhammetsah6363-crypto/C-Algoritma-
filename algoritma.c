@@ -50,12 +50,6 @@ void insertionSort(int dizi[] , int n){
     }
 }
 
-void yazdir(int dizi[] , int n){
-    for(int i=0;i<n;i++){
-        printf("%d " , dizi[i]);
-    }
-}
-
 int binarySearch(int dizi[], int boyut , int aranan){
     int bas = 0 ;
     int son = boyut - 1 ;
@@ -206,7 +200,252 @@ void questackTers(char cumle []){
     }
 }
 
-int main(){
-    questackTers("merhaba dunya");
-    return 0;
+
+
+typedef struct node{
+    int data;
+    struct node* next;
+    struct node* prev;
+
+}node;
+
+node* ekle_tekyonlu(node* head , int veri , int index){
+    node* newnode = (node*)malloc(sizeof(node));
+    if(newnode==NULL) return head;
+    newnode->data=veri;
+    newnode->prev=NULL;
+    if(index == 0 || head==NULL){
+        newnode->next=head;
+        return newnode;
+    }
+    node* temp = head;
+    int i=0;
+    
+    while(i < index-1 && temp->next!=NULL){
+        temp=temp->next;
+        i++;
+    }
+    newnode->next=temp->next;
+    temp->next=newnode;
+    return head;
 }
+
+node* sil_tekyonlu(node* head , int index){
+    if(head==NULL) return NULL;
+
+    node* temp = head;
+
+    if(index==0){
+        head=head->next;
+        free(temp);
+        return head;
+    }
+    int i=0;
+    while(i < index-1 && temp->next!=NULL){
+        temp=temp->next;
+        i++;
+    }
+
+    if(temp->next==NULL){
+        return head;
+    }
+
+    node* silinecek = temp->next;
+    temp->next = silinecek->next;
+    free(silinecek);
+    return head;
+}
+
+node* ekle_ciftyonlu(node* head , int veri , int index){
+    node* newnode = (node*)malloc(sizeof(node));
+    if(newnode==NULL) return head;
+    newnode->data=veri;
+
+    if (head==NULL || index == 0){
+        newnode->next = head;
+        newnode->prev = NULL;
+        if(head != NULL){
+            head->prev=newnode;
+        }return newnode; 
+        }
+    node*temp=head;
+    int i = 0;
+
+    while(temp->next!=NULL && i < index-1){
+        temp=temp->next;
+        i++;
+    }
+    newnode->next=temp->next;
+    newnode->prev=temp;
+
+    if(temp->next!=NULL){
+        temp->next->prev=newnode;
+    }
+    temp->next=newnode;
+
+    return head;
+}
+
+node* sil_ciftyonlu(node*head , int index){
+    if (head == NULL) return NULL;
+    node* temp = head;
+    
+    if (index==0){
+        head=head->next;
+        if (head!=NULL){
+            head->prev=NULL;
+        }
+        free(temp);
+        return head;
+    }
+
+    int i=0;
+    while(i<index && temp!=NULL){
+        temp=temp->next;
+        i++;
+    }
+    if(temp==NULL) {
+        return head;
+    }
+
+    if (temp->prev !=NULL){
+        temp->prev->next=temp->next;
+    }
+
+    if(temp->next!=NULL){
+        temp->next->prev = temp->prev;
+    }
+    free(temp);
+    return head;
+}
+
+node* ekle_tekyonludairesel(node* head , int veri , int index){
+    node* newnode = (node*)malloc(sizeof(node));
+    if(newnode == NULL) return head;
+    newnode -> data = veri; 
+    newnode -> prev = NULL;
+    if (head == NULL){
+        newnode->next=newnode;
+        return newnode;
+    }
+    if (index == 0){
+        node* son = head;
+        while(son->next != head){
+            son=son->next;
+        }
+        newnode->next=head;
+        son->next=newnode;
+        return newnode;
+    }
+
+    node* temp = head;
+    int i=0;
+
+    while(i<index-1 && temp->next != head){
+        temp=temp->next;
+        i++;
+    }
+
+    newnode->next=temp->next;
+    temp->next=newnode;
+    return head;
+}
+
+node* sil_tekyonludairesel(node* head , int index){
+    if (head==NULL) return NULL;
+    if(head->next == head){
+        free(head);
+        return NULL;
+        }
+    if (index==0){
+        node* son = head;
+        while(son->next!=head){
+            son=son->next;
+        }
+        node* silinecek = head;
+        head=head->next;
+        son->next = head;
+        free(silinecek);
+        return head;
+        }
+    node* temp = head;
+    int i=0;
+    while(i<index-1 && temp->next!=head){
+        temp=temp->next;
+        i++;
+        }
+    if(temp->next==head){
+        return head;
+    } 
+    node* silinecek = temp->next;
+    temp->next = silinecek->next;
+    free(silinecek);
+    return head;
+}
+
+node* ekle_ciftyonludairesel(node* head , int veri , int index){
+    node* newnode = (node*)malloc(sizeof(node));
+    if(newnode == NULL) return head;
+    newnode->data=veri;
+    newnode->next = NULL;
+    newnode->prev = NULL;
+
+    if(head==NULL){
+        newnode->next=newnode;
+        newnode->prev=newnode;
+        return newnode;
+        }
+
+        node* son = head->prev;
+
+        if (index==0){
+            newnode->prev=son;
+            newnode->next=head;
+            head->prev=newnode;
+            son->next=newnode;
+
+            return newnode;
+        }
+
+        node*temp=head;
+        int i=0;
+
+        while(i<index-1 && temp->next!=head){
+            temp=temp->next;
+            i++;
+        }
+
+       newnode->next=temp->next;
+       newnode->prev=temp;
+       temp->next->prev=newnode;
+       temp->next=newnode;
+       
+       return head;
+}
+
+node* sil_ciftyonludairesel(node*head , int index){
+    if (head==NULL) return NULL;
+
+    node* temp = head;
+
+    if(head->next==head){
+        free(head);
+        return NULL;
+    }
+    
+    int i=0;
+    while(i<index && temp->next!=head){
+        temp=temp->next;
+        i++;
+    }
+
+    temp->prev->next=temp->next;
+    temp->next->prev=temp->prev;
+    if(i<index) return head;
+    if(temp==head){
+        head=temp->next;
+    }
+    free(temp);
+    return head;
+}
+ 
