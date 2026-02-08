@@ -1,0 +1,173 @@
+import sys
+import random
+from PyQt6.QtWidgets import (
+    QApplication, 
+    QMainWindow, 
+    QWidget, 
+    QVBoxLayout, 
+    QHBoxLayout,
+    QGroupBox,
+    QLabel, 
+    QLCDNumber, 
+    QProgressBar,
+    QListWidget,
+    QPushButton,
+    QGridLayout,
+    QButtonGroup
+)
+from PyQt6.QtCore import Qt, QTimer
+
+class HavaSavunmaIzlemePaneli(QMainWindow):
+
+    def __init__(self):
+        super().__init__()
+
+        self.merkez_widget = QWidget()
+        self.setCentralWidget(self.merkez_widget)
+
+        self.ana_duzen = QHBoxLayout()
+        self.sag_taraf = QVBoxLayout()  
+
+        self.kamera = QLabel("KAMERA")
+        self.kamera.setStyleSheet("border:2px solid green; background-color:black; color:white;")
+        self.kamera.setMinimumSize(800,500) 
+
+        self.alt_panel = QGroupBox("SİSTEM VERİLERİ")
+        alt_layout = QHBoxLayout()
+        self.alt_panel.setMinimumHeight(100)
+        self.alt_panel.setLayout(alt_layout)
+
+        self.mod_grubu= QGroupBox("SİSTEM MODLARI") 
+        mod_layout = QGridLayout() 
+
+        self.btn_manuel = QPushButton("MANUEL")
+        self.btn_manuel.setCheckable(True)
+        self.btn_manuel.setChecked(True)
+
+        self.btn_otonom = QPushButton("OTONOM")
+        self.btn_otonom.setCheckable(True)
+
+        self.btn_mod1 = QPushButton("MOD 1")
+        self.btn_mod1.setCheckable(True)
+
+        self.btn_mod2 = QPushButton("MOD 2")
+        self.btn_mod2.setCheckable(True)
+
+        mod_layout.addWidget(self.btn_manuel , 0 , 0 )
+        mod_layout.addWidget(self.btn_otonom , 0 , 1 )
+        mod_layout.addWidget(self.btn_mod1 , 1 , 0 )
+        mod_layout.addWidget(self.btn_mod2, 1 , 1 )
+         
+        self.mod_grubu.setLayout(mod_layout)
+
+        self.log_sistemi = QGroupBox("LOG SİSTEMİ")
+        log_layout = QVBoxLayout()
+        self.olay_listesi = QListWidget()
+        log_layout.addWidget(self.olay_listesi)
+        self.log_sistemi.setLayout(log_layout)
+        self.log_sistemi.setMaximumHeight(200)
+
+        self.sag_taraf.addWidget(self.mod_grubu)
+        self.sag_taraf.addWidget(self.alt_panel)
+        self.sag_taraf.addWidget(self.log_sistemi)
+        
+        self.ana_duzen.addWidget(self.kamera,7)
+        self.ana_duzen.addLayout(self.sag_taraf,3)
+
+        self.merkez_widget.setLayout(self.ana_duzen)
+
+        #renk
+
+        arka_plan = "black"
+        on_plan = "#00C800"
+        self.setStyleSheet(f"""
+            QMainWindow {{
+                background-color: {arka_plan};
+            }}
+            QGroupBox {{
+                color: {on_plan};
+                border: 2px solid {on_plan};
+                border-radius: 8px;
+                margin-top: 15px;
+                font-size: 14px;
+                font-weight: bold;
+            }}
+            QGroupBox::title {{
+                subcontrol-origin: margin;
+                left: 10px;
+                padding: 0 5px;
+            }}
+            QPushButton {{
+                background-color: rgb(50, 60, 75);
+                color: white;
+                border: 1px solid {on_plan};
+                padding: 8px;
+                border-radius: 4px;
+                font-weight: bold;
+            }}
+            QPushButton:checked {{
+                background-color: {on_plan};
+                color: {arka_plan};
+            }}
+            QListWidget {{
+                background-color: rgb(30, 35, 45);
+                color: {on_plan};
+                border: none;
+                font-family: 'Consolas'; /* Kod ekranı gibi görünmesi için */
+            }}
+            QLabel {{
+                color: white;
+                font-weight: bold;
+            }}
+       """)
+        
+        #zamanlayıcı
+        self.zamanlayici = QTimer()
+        self.zamanlayici.timeout.connect(self.verileri_guncelle)
+        self.zamanlayici.start(10000)
+      
+        # buton kontrolu
+
+        self.btn_manuel.clicked.connect(self.manuel_tiklandi)
+        self.btn_otonom.clicked.connect(self.otonom_tiklandi)
+        self.btn_mod1.clicked.connect(self.mod1_tiklandi)
+        self.btn_mod2.clicked.connect(self.mod2_tiklandi)
+
+        self.mod_mantigi = QButtonGroup()
+        self.mod_mantigi.addButton(self.btn_manuel)
+        self.mod_mantigi.addButton(self.btn_otonom)
+        self.mod_mantigi.addButton(self.btn_mod1)
+        self.mod_mantigi.addButton(self.btn_mod2)
+        self.mod_mantigi.setExclusive(True)
+
+    def verileri_guncelle(self):
+        self.olay_listesi.addItem("SİSTEM TARANIYOR...")
+        self.olay_listesi.scrollToBottom()
+
+    def manuel_tiklandi(self):
+        if self.btn_manuel.isChecked():
+            self.olay_listesi.addItem("MOD: MANUEL")
+        
+    def otonom_tiklandi(self):
+        if self.btn_otonom.isChecked():
+            self.olay_listesi.addItem("MOD: OTONOM")
+       
+    def mod2_tiklandi(self):
+        if self.btn_mod2.isChecked():
+            self.olay_listesi.addItem("MOD 2: YÜKSEK İRTİFA")
+        
+    def mod1_tiklandi(self):
+        if not self.btn_mod1.isChecked():
+            self.olay_listesi.addItem("MOD 1: HEDEF ODAKLI")
+              
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    
+    pencere = HavaSavunmaIzlemePaneli() # Sınıf ismin neyse onu yazmalısın
+    
+    pencere.show()
+    
+    sys.exit(app.exec())
+
+
+    
